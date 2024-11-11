@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+    <meta charset="UTF-8">
+    <title>Посты</title>
+{% endblock %}
+{% block content %}
+<header>
+    <h1>ANDRAX BLOG v1</h1>
+</header>
+<main>
+    <section class="menu">
+        <div class="menu-item"><a href="/post_create">Создать статью</a></div>
+    </section>
+    <section class="main-block">
+        Тут будут посты
+        {% for post in result %}
+            <section class="post_section">
+                <div class="nickname"><h2> {{ post.name }}</h2></div>
+                <div class="text"><p> {{ post.preview }}</p></div>
+                <div class="text"><p> {{ post.datetime }}</p></div>
+                <a href="/posts/{{ post.id }}" class="btn">Подробнее</a>
+            </section>
+        {% endfor %}
+    </section>
+    <section class="aaa">
+    </section>
+</main>
+
+{% endblock %}

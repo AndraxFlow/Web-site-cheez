@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}
+    <meta charset="UTF-8">
+    <title>Пост {{ result.name }}</title>
+{% endblock %}
+{% block content %}
+
+<header>
+    <h1>ANDRAX BLOG v1</h1>
+</header>
+<main>
+    <section class="option_menu">
+            <a href="/posts/{{ result.id }}/delete" class="option_menu_btn">Удалить</a>
+            <a href="/posts/{{ result.id }}/update" class="option_menu_btn">Редактировать</a>
+            <a href="/" class="option_menu_btn">Скачать</a>
+        </select>
+    </section>
+    <section class="main-block">
+        <div class="nickname"><h2> {{ result.name }}</h2></div>
+        <div class="text"><p> {{ result.text_message }}</p></div>
+        <div class="text"><p> {{ result.datetime }}</p></div>
+    </section>
+    <section class="aaa">
+    </section>
+</main>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <p>HELLO {{ name }}</p>
+    <section class="main-block">
+    Тут будут посты
+        {% for post in posts %}
+                <div class="nickname"><p> {{ post.author.nickname }}</p></div>
+                <div class="text"><p> {{ post.body }}</p></div>
+        {% endfor %}
+    </section>
+{% endblock %}

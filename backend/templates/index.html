@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+{% endblock %}
+
+{% block content %}
+<main>
+    <section class="main__text top">
+        <div class="typing-demo">
+            <h2 class="typing-demo-text">Начните писать свой блог здесь</h2>
+        </div>
+        <button class="button_main">
+            <a class="button_main-text" href="/post_create">Создать</a>
+        </button>
+    </section>
+</main>
+
+{% endblock %}

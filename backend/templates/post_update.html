@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}
+<meta charset="UTF-8">
+<title>Обновление статьи</title>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1 class="container__label"> Обновление статьи </h1>
+        <form class="container__form" action="/posts/{{ id }}/update" method="POST">
+            <input class="container__form_input" type="text" name="name" id="name" placeholder="Название"><br>
+            <input class="container__form_input" type="text" name="preview" id="preview" placeholder="Превью"><br>
+            <textarea class="container__form_input" name="text_message" id="text_message" placeholder="Что вы хотите записать"></textarea><br>
+            <input class="container__form_btn" type="submit" value="Создать"><br>
+        </form>
+    </div>
+{% endblock %}

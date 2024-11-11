@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}{% endblock %}
+    <header class="header">
+      <div class="header__label">
+        <div class="header__logo-inner">
+          <img class="header__logo" src="/static/cheez.svg" alt="logo">
+        </div>
+        <h1 class="header__title">Cheez</h1>
+      </div>
+      <nav class="header__navigation">
+        <ul class="header__navigation-menu">
+          <li class="header__navigation-menu-item"><a class="nav-button" href="/index">Главная</a></li>
+          <li class="header__navigation-menu-item"><a class="nav-button" href="/about">О нас</a></li>
+          <li class="header__navigation-menu-item"><a class="nav-button" href="/posts">Посты</a></li>
+        </ul>
+      </nav>
+    </header>
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+    <footer class="footer">
+      <div class="footer__rights">
+        <h2 class="footer__text">© 2024 ООО "Чиз". Все права защищены.</h2>
+      </div>
+    </footer>
+  </body>
+</html>

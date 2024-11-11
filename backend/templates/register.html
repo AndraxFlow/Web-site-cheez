@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}
+<meta charset="UTF-8">
+<title>Авторизация</title>
+{% endblock %}
+{% block content %}
+
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class='flash {{cat}}'>{{msg}}</div>
+{%endfor%}
+
+<div class="container">
+    <h2 class="container__label"> Авторизация </h2>
+    <form class="container__form" action="/register" method="POST">
+        <input class="container__form_input" type="text" name="name" id="name" placeholder="Username..." requied/><br>
+        <input class="container__form_input" type="text" name="login" id="login" placeholder="Email..." requied/><br>
+        <input class="container__form_input" type="password" name="password" id="password" placeholder="Password..." requied/><br>
+        <input class="container__form_input" type="password" name="password2" id="password2" placeholder="Repeat password..." requied/><br>
+        <input class="container__form_btn button_main" type="submit" value="Регистрация"><br>
+    
+    </form>
+</div>
+{% endblock %}
