@@ -5,15 +5,23 @@ from datetime import timedelta
 from flask import  flash, make_response, request, send_from_directory, redirect, session, url_for, render_template
 from werkzeug.security import generate_password_hash
 
-from backend.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
-from backend.services import insertNewClient, insertNewPost
-from backend.db import get_connection
+from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
+from model.services import insertNewClient, insertNewPost
+from model.db import get_connection
 
 __all__ = [
     "app",
 ]
 
-app = Flask(__name__)
+template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+template_dir = os.path.join(template_dir, 'Flask_web-site')
+template_dir = os.path.join(template_dir, 'view')
+template_dir = os.path.join(template_dir, 'templates')
+static_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+static_dir = os.path.join(static_dir, 'Flask_web-site')
+static_dir = os.path.join(static_dir, 'view')
+static_dir = os.path.join(static_dir, 'static')
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['SECRET_KEY'] =  SECRET_TOKEN # нужен для алгоритма шифрования
 app.permanent_session_lifetime = timedelta(days=SESSION_LIFETIME_DAYS)
 

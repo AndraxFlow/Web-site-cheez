@@ -1,7 +1,7 @@
 import pymysql
 from pymysql.connections import Connection
 
-from backend.config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_USER
+from common.config import DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_USER
 
 
 __all__ = [

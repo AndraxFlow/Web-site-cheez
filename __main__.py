@@ -1,6 +1,6 @@
-from backend.controllers import app
-from backend.config import DEBUG, HTTP_HOST, HTTP_PORT
-from backend.db import createDB
+from controller.controllers import app
+from common.config import DEBUG, HTTP_HOST, HTTP_PORT
+from model.db import createDB
 
 def main() -> None:
     createDB()
