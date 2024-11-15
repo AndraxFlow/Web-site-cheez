@@ -3,11 +3,13 @@ from flask import Flask
 from datetime import timedelta
 
 from flask import  flash, make_response, request, send_from_directory, redirect, session, url_for, render_template
-from werkzeug.security import generate_password_hash
+from flask_login import LoginManager, login_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
+from model.userLogin import UserLogin
 from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
 from model.services import insertNewClient, insertNewPost
-from model.db import get_connection
+from model.db import get_connection, getUser
 
 __all__ = [
     "app",
@@ -21,13 +23,16 @@ static_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__f
 static_dir = os.path.join(static_dir, 'Flask_web-site')
 static_dir = os.path.join(static_dir, 'view')
 static_dir = os.path.join(static_dir, 'static')
+
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['SECRET_KEY'] =  SECRET_TOKEN # нужен для алгоритма шифрования
 app.permanent_session_lifetime = timedelta(days=SESSION_LIFETIME_DAYS)
 
+login_manager = LoginManager(app)
+
 @app.route('/favicon.ico') 
 def favicon(): 
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory('../view/static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 @app.route('/index')
@@ -60,19 +65,41 @@ def post_create():
 def about():
     return render_template('about.html')
 
-@app.route('/login')
+@login_manager.user_loader
+def load_user(user_id):
+    print("load_user")
+    connection = get_connection()
+    return getUser(user_id)
+
+@app.route('/login',methods=['POST','GET'])
 def login():
+    if request.method == "POST":
+        connection = get_connection()
+        try:
+            with connection.cursor() as cursor:
+                print("'{}'".format(request.form['email']))
+                cursor.execute(f"SELECT * FROM `clients` WHERE email = '{request.form['email']}';")
+                user = cursor.fetchall()[0]
+                cursor.close()
+                if user and check_password_hash(user['password'], request.form['password']):
+                    userlogin = UserLogin().create(user)
+                    login_user(userlogin)
+                    return redirect(url_for('index'))
+        except Exception as e:
+            print(e)
+            flash("НЕВЕРНАЯ ПАРА ЛОГИН.ПАРОЛЬ","error")
+        
     return render_template("login.html")
 
 @app.route('/register', methods=["POST","GET"])
 def register():
     connection = get_connection()
     if request.method == "POST":
-        if len(request.form['name']) > 4 and  len(request.form['login']) > 4 \
+        if len(request.form['name']) > 4 and  len(request.form['email']) > 4 \
             and len(request.form['password']) > 4 \
             and (request.form['password'] == request.form['password2']):
             hash = generate_password_hash(request.form['password'])
-            res = insertNewClient(connection, request.form['name'], request.form['login'], hash)
+            res = insertNewClient(connection, request.form['name'], request.form['email'], hash)
             if res:
                 flash('Вы успешно зарегестрированы', 'success')
                 return redirect(url_for('login'))
@@ -95,7 +122,7 @@ def posts():
         with connection.cursor() as cursor:
             cursor.execute("SELECT *\
                 FROM posts\
-                ORDER BY datetime;")
+                ORDER BY created_at;")
             result = cursor.fetchall()
             cursor.close()
     except Exception as ex:

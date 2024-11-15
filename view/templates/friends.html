@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}
+    <meta charset="UTF-8">
+    <title>Посты</title>
+{% endblock %}
+{% block content %}
+<header>
+    <h1>ANDRAX BLOG v1</h1>
+</header>
+<main>
+    <section class="menu">
+        <div class="menu-item"><a href="/add_friend">Добавить друзей</a></div>
+    </section>
+    <section class="main-block">
+        Тут будут посты
+        {% for friend in result %}
+            <section class="post_section">
+                <div class="nickname"><h2> {{ friend.name }}</h2></div>
+                <div class="status"><p> {{ friend.status }}</p></div>
+                <a href="/friends/{{ friend.id }}" class="btn">Подробнее</a>
+            </section>
+        {% endfor %}
+    </section>
+    <section class="aaa">
+    </section>
+</main>
+
+{% endblock %}

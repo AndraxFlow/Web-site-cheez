@@ -14,8 +14,6 @@ body {
     
 }
 
-
-
 h1,h2,h3,p,a,body {
     margin: 0; 
     padding: 0;
@@ -49,7 +47,6 @@ h1,h2,h3,p,a,body {
     height: 64px;
     margin: auto;
 }
-
 
 /*NAVIGATION*/
 
@@ -96,7 +93,6 @@ h1,h2,h3,p,a,body {
     background-color: #ccd5ae;
 }
 
-
 .main__text {
     margin-inline: auto;
     margin-block-start: 40vh;
@@ -123,7 +119,6 @@ h1,h2,h3,p,a,body {
     transition: .3s;
 }
 
-
 .button_main:hover {
     box-shadow: 8px 8px #b2be89;
     transition: .3s;
@@ -136,8 +131,12 @@ h1,h2,h3,p,a,body {
     text-decoration: none;
 }
 
-
-
+.button_main-reg {
+    font-size: 18px;
+    font-weight: 500;
+    color:rgb(46, 46, 46);
+    text-decoration: none;
+}
 
 .container {
     margin-inline: auto;
@@ -179,8 +178,6 @@ h1,h2,h3,p,a,body {
 .container__form_btn {
     border: 2px solid #b2be89;
 }
-
-
 
 .footer {
     position: fixed;

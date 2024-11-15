@@ -13,6 +13,8 @@ def insertNewPost(connection: Connection, post: dict[str, Any]):
         name = post['name']
         preview = post['preview']
         text_message = post['text_message']
+    else:
+        return
     try:
         with connection.cursor() as cursor:
             cursor.execute("INSERT  `web-site`.`posts` (name, preview, text_message) VALUES (%s, %s, %s)", (name, preview, text_message))
@@ -22,20 +24,18 @@ def insertNewPost(connection: Connection, post: dict[str, Any]):
         print(e)
      
         
-def insertNewClient(connection, name, login, password):
+def insertNewClient(connection, name, email, password):
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) as `count` FROM `clients` WHERE login LIKE %s", (login))
-            res = cursor.fetchone()
+            cursor.execute(f"SELECT COUNT(*) as `count` FROM `clients` WHERE email = {email}")
+            res = cursor.fetchall()[0]
             if res['count'] > 0:
                 print('Пользователь с таким email уже существует')
                 return False
-            
-    
             cursor.execute("INSERT `clients`\
-                (name, login, password) \
+                (name, email, password) \
                     VALUES (%s, %s, %s)",
-                    (name,login,password))
+                    (name,email,password))
             connection.commit()
             cursor.close() 
             

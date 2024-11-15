@@ -3,6 +3,8 @@ __pycache__
 db.sql
 .env
 venv
+.pylintrc
+
 .venv
 # Игнорировать байткод
 *.pyc

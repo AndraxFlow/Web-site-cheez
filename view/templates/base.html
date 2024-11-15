@@ -5,6 +5,8 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block title %}{% endblock %}
+  </head>
+  <body>
     <header class="header">
       <div class="header__label">
         <div class="header__logo-inner">
@@ -17,11 +19,11 @@
           <li class="header__navigation-menu-item"><a class="nav-button" href="/index">Главная</a></li>
           <li class="header__navigation-menu-item"><a class="nav-button" href="/about">О нас</a></li>
           <li class="header__navigation-menu-item"><a class="nav-button" href="/posts">Посты</a></li>
+          <li class="header__navigation-menu-item"><a class="nav-button" href="/login">Войти</a></li>
+          <li class="header__navigation-menu-item"><a class="nav-button" href="/friends">Друзья</a></li>
         </ul>
       </nav>
     </header>
-  </head>
-  <body>
     {% block content %}{% endblock %}
     <footer class="footer">
       <div class="footer__rights">
