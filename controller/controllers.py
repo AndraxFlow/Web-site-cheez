@@ -1,15 +1,16 @@
 import os
-from flask import Flask
 from datetime import timedelta
+from flask import Flask
 
 from flask import  flash, make_response, request, send_from_directory, redirect, session, url_for, render_template
 from flask_login import LoginManager, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from model.userLogin import UserLogin
-from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
 from model.services import insertNewClient, insertNewPost
 from model.db import get_connection, getUser
+from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
+
 
 __all__ = [
     "app",
@@ -30,15 +31,17 @@ app.permanent_session_lifetime = timedelta(days=SESSION_LIFETIME_DAYS)
 
 login_manager = LoginManager(app)
 
-@app.route('/favicon.ico') 
-def favicon(): 
+@app.route('/favicon.ico')
+def favicon():
     return send_from_directory('../view/static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 @app.route('/index')
 def index():
-    session.permanent = True # поставить вручную время сессии 
-    if 'visits' in session: # по умолчанию времяжизни сессии - до закрытия браузера
+    # поставить вручную время сессии
+    session.permanent = True
+    # по умолчанию времяжизни сессии - до закрытия браузера
+    if 'visits' in session:
         session['visits'] = session.get('visits') + 1
     else:
         session['visits'] = 1
@@ -68,7 +71,6 @@ def about():
 @login_manager.user_loader
 def load_user(user_id):
     print("load_user")
-    connection = get_connection()
     return getUser(user_id)
 
 @app.route('/login',methods=['POST','GET'])
@@ -77,7 +79,6 @@ def login():
         connection = get_connection()
         try:
             with connection.cursor() as cursor:
-                print("'{}'".format(request.form['email']))
                 cursor.execute(f"SELECT * FROM `clients` WHERE email = '{request.form['email']}';")
                 user = cursor.fetchall()[0]
                 cursor.close()
@@ -88,7 +89,7 @@ def login():
         except Exception as e:
             print(e)
             flash("НЕВЕРНАЯ ПАРА ЛОГИН.ПАРОЛЬ","error")
-        
+
     return render_template("login.html")
 
 @app.route('/register', methods=["POST","GET"])
@@ -111,8 +112,8 @@ def register():
 
 @app.route('/logout')
 def logout():
-    res = make_response(f"<h1>вы больше не авторизованы</h1>")
-    res.set_cookie("logged", "", 0) 
+    res = make_response("<h1>вы больше не авторизованы</h1>")
+    res.set_cookie("logged", "", 0)
     return res
 
 @app.route('/posts')
@@ -155,7 +156,6 @@ def post_delete(id):
             connection.commit()
             cursor.close()
     except Exception as ex:
-        result = None
         print(ex)
     return redirect('/posts')
 
@@ -164,9 +164,12 @@ def post_update(id):
     connection = get_connection()
 
     if request.method == 'POST':
-        if request.form['name'] != '': name = request.form['name']
-        if request.form['preview'] != '': preview = request.form['preview']
-        if request.form['text_message'] != '': text_message = request.form['text_message']
+        if request.form['name'] != '':
+            name = request.form['name']
+        if request.form['preview'] != '':
+            preview = request.form['preview']
+        if request.form['text_message'] != '':
+            text_message = request.form['text_message']
         try:
             with connection.cursor() as cursor:
                 if request.form['name'] != '':
@@ -182,7 +185,7 @@ def post_update(id):
                         SET text_message=%s WHERE id = %s;",
                         (text_message,id))
                 connection.commit()
-                cursor.close() 
+                cursor.close()
         except Exception as e:
             print(e)
         return redirect('/posts')

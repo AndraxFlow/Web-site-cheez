@@ -6,7 +6,6 @@ __all__ = [
     "insertNewPost",
     "insertNewClient",
 ]
-        
 
 def insertNewPost(connection: Connection, post: dict[str, Any]):
     if post:
@@ -22,8 +21,7 @@ def insertNewPost(connection: Connection, post: dict[str, Any]):
             cursor.close()
     except Exception as e:
         print(e)
-     
-        
+
 def insertNewClient(connection, name, email, password):
     try:
         with connection.cursor() as cursor:
@@ -37,8 +35,7 @@ def insertNewClient(connection, name, email, password):
                     VALUES (%s, %s, %s)",
                     (name,email,password))
             connection.commit()
-            cursor.close() 
-            
+            cursor.close()
         return True
     except Exception as e:
         print(e)

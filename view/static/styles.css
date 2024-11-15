@@ -81,9 +81,9 @@ h1,h2,h3,p,a,body {
     border-radius: 5px;
 }
 
-.nav-button:link {
+/* .nav-button:link {
 
-}
+} */
 
 .nav-button:visited {
     color: black;
