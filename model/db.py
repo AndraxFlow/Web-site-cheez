@@ -27,7 +27,7 @@ def createDB() -> None:
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("CREATE DATABASE IF NOT EXISTS `web-site`")
+            cursor.execute("CREATE DATABASE IF NOT EXISTS `web_site`")
             connection.commit()
     except Exception as ex:
         print(ex)
@@ -46,7 +46,7 @@ def createDB() -> None:
     except Exception as ex:
         print(ex)
 
-def getUser( user_id):
+def getUser(user_id):
     connection = get_connection()
     try:
         with connection.cursor() as cursor:

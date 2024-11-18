@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from model.userLogin import UserLogin
 from model.services import insertNewClient, insertNewPost
 from model.db import get_connection, getUser
+from model.FDatabase import FDatabase
 from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
 
 
@@ -35,6 +36,19 @@ login_manager = LoginManager(app)
 def favicon() -> Response:
     return send_from_directory('../view/static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+@app.before_request
+def before_request():
+    global db, connection
+    connection = get_connection()
+    db = FDatabase(db=connection)
+    
+@app.teardown_appcontext
+def close_db(error):
+    '''Закрытие соединения с бд'''
+    if connection:
+        db.closeConnect()
+    
+
 @app.route('/')
 @app.route('/index')
 def index() :
@@ -48,18 +62,22 @@ def index() :
     return render_template('index.html', session=session)
 
 @app.route('/post_create', methods=["POST",'GET'])
-@login_required
+#@login_required
 def post_create():
-    connection = get_connection()
     if request.method == 'POST':
         name = request.form['name']
         preview = request.form['preview']
         text_message = request.form['text_message']
+        # owner_id = db.getUser()
         if len(preview) == 0:
             preview = text_message[:20]+'...'
-
         post = {'name':name,'preview':preview,'text_message':text_message}
-        insertNewPost(connection, post)
+        
+        res = db.insertNewPost(post=post)
+        if res:
+            flash('Статья добавлена успешно', category='success')
+        else:
+            flash('Ошибка в добавлении статьм', category='error')
 
         return redirect('/posts')
     else:
@@ -77,7 +95,6 @@ def load_user(user_id):
 @app.route('/login',methods=['POST','GET'])
 def login():
     if request.method == "POST":
-        connection = get_connection()
         try:
             with connection.cursor() as cursor:
                 cursor.execute(f"SELECT * FROM `clients` WHERE email = '{request.form['email']}';")
@@ -95,13 +112,14 @@ def login():
 
 @app.route('/register', methods=["POST","GET"])
 def register():
-    connection = get_connection()
     if request.method == "POST":
         if len(request.form['name']) > 4 and  len(request.form['email']) > 4 \
             and len(request.form['password']) > 4 \
             and (request.form['password'] == request.form['password2']):
             hash = generate_password_hash(request.form['password'])
-            res = insertNewClient(connection, request.form['name'], request.form['email'], hash)
+            
+            res = db.insertNewClient( request.form['name'], request.form['email'], hash)
+            
             if res:
                 flash('Вы успешно зарегестрированы', 'success')
                 return redirect(url_for('login'))
@@ -119,76 +137,34 @@ def logout():
 
 @app.route('/posts')
 def posts():
-    connection = get_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT *\
-                FROM posts\
-                ORDER BY created_at;")
-            result = cursor.fetchall()
-            cursor.close()
-    except Exception as ex:
-        result = None
-        print(ex)
+    result = db.getPosts()
     return render_template('posts.html', result=result)
 
 @app.route('/posts/<int:id>')
 def post(id):
-    connection = get_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * \
-                FROM `web-site`.`posts` \
-                WHERE id = {id};")
-            result = cursor.fetchall()[0]
-            cursor.close()
-    except Exception as ex:
-        result = None
-        print(ex)
+    result = db.getPost(id_post=id)
     return render_template('post.html',result=result)
 
 @app.route('/posts/<int:id>/delete')
 def post_delete(id):
-    connection = get_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(f"DELETE FROM `web-site`.`posts`\
-                WHERE (`id` = '{id}');")
-            connection.commit()
-            cursor.close()
-    except Exception as ex:
-        print(ex)
+    db.deletePost(id_post=id)
     return redirect('/posts')
 
 @app.route('/posts/<int:id>/update', methods=["POST",'GET'])
 def post_update(id):
-    connection = get_connection()
-
     if request.method == 'POST':
+        name = ''
+        preview = ''
+        text_message = ''
         if request.form['name'] != '':
             name = request.form['name']
         if request.form['preview'] != '':
             preview = request.form['preview']
         if request.form['text_message'] != '':
             text_message = request.form['text_message']
-        try:
-            with connection.cursor() as cursor:
-                if request.form['name'] != '':
-                    cursor.execute("UPDATE posts\
-                        SET name=%s WHERE id = %s;",
-                        (name,id))
-                if request.form['preview'] != '':
-                    cursor.execute("UPDATE posts\
-                        SET preview=%s WHERE id = %s;",
-                        (preview,id))
-                if request.form['text_message'] != '':
-                    cursor.execute("UPDATE posts\
-                        SET text_message=%s WHERE id = %s;",
-                        (text_message,id))
-                connection.commit()
-                cursor.close()
-        except Exception as e:
-            print(e)
+        
+        db.updatePost(id_post=id,name=name,preview=preview, text_message=text_message)
+        
         return redirect('/posts')
     else:
         return render_template('post_update.html',id=id)

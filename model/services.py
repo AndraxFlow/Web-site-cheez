@@ -16,7 +16,7 @@ def insertNewPost(connection, post):
         return
     try:
         with connection.cursor() as cursor:
-            cursor.execute("INSERT  `web-site`.`posts` (name, preview, text_message) VALUES (%s, %s, %s)", (name, preview, text_message))
+            cursor.execute("INSERT  `web_site`.`posts` (name, preview, text_message) VALUES (%s, %s, %s)", (name, preview, text_message))
             connection.commit()
             cursor.close()
     except Exception as e:
