@@ -12,5 +12,5 @@ class FDatabase:
             if res:
                 return res
         except:
-            print("Ошибка чтения из БД")
+            print("Ошибка чтения из БД абоба")
         return []
