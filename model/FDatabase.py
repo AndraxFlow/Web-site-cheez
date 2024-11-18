@@ -1,5 +1,16 @@
 
 class FDatabase:
     def __init__(self, db) -> None:
-        self._db = db
-        self._cursor = db.cursor()
+        self.__db = db
+        self.__cursor = db.cursor()
+
+    def getMenu(self) -> list:
+        sql = """SELECT * FROM `posts`"""
+        try:
+            self.__cursor.execute(sql)
+            res = self.__cursor.fetchall()
+            if res:
+                return res
+        except:
+            print("Ошибка чтения из БД")
+        return []

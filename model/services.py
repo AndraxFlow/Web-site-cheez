@@ -7,7 +7,7 @@ __all__ = [
     "insertNewClient",
 ]
 
-def insertNewPost(connection: Connection, post: dict[str, Any]):
+def insertNewPost(connection, post):
     if post:
         name = post['name']
         preview = post['preview']

@@ -22,7 +22,8 @@ def get_connection() -> Connection:
     except Exception as e:
         print('not connected', e)
 
-def createDB():
+
+def createDB() -> None:
     connection = get_connection()
     try:
         with connection.cursor() as cursor:

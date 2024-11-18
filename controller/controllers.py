@@ -1,9 +1,9 @@
 import os
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, Response
 
 from flask import  flash, make_response, request, send_from_directory, redirect, session, url_for, render_template
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_required, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from model.userLogin import UserLogin
@@ -32,12 +32,12 @@ app.permanent_session_lifetime = timedelta(days=SESSION_LIFETIME_DAYS)
 login_manager = LoginManager(app)
 
 @app.route('/favicon.ico')
-def favicon():
+def favicon() -> Response:
     return send_from_directory('../view/static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 @app.route('/index')
-def index():
+def index() :
     # поставить вручную время сессии
     session.permanent = True
     # по умолчанию времяжизни сессии - до закрытия браузера
@@ -48,6 +48,7 @@ def index():
     return render_template('index.html', session=session)
 
 @app.route('/post_create', methods=["POST",'GET'])
+@login_required
 def post_create():
     connection = get_connection()
     if request.method == 'POST':
