@@ -27,7 +27,7 @@ def createDB() -> None:
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("CREATE DATABASE IF NOT EXISTS `web-site`")
+            cursor.execute("CREATE DATABASE IF NOT EXISTS `web_site`")
             connection.commit()
     except Exception as ex:
         print(ex)
@@ -45,19 +45,3 @@ def createDB() -> None:
             connection.commit()
     except Exception as ex:
         print(ex)
-
-def getUser( user_id):
-    connection = get_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM `clients` WHERE id = {user_id} LIMIT 1")
-            res = cursor.fetchall()[0]
-            cursor.close()
-        if not res:
-            print("Пользователь не найден")
-            return False
-        return res
-    except Exception as e:
-        print("Ошибка в получении данных из БД " + str(e))
-
-    return False
