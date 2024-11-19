@@ -3,12 +3,11 @@ from datetime import timedelta
 from flask import Flask, Response
 
 from flask import  flash, make_response, request, send_from_directory, redirect, session, url_for, render_template
-from flask_login import LoginManager, login_required, login_user
+from flask_login import LoginManager, current_user, login_required, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from model.userLogin import UserLogin
-from model.services import insertNewClient, insertNewPost
-from model.db import get_connection, getUser
+from model.db import get_connection
 from model.FDatabase import FDatabase
 from common.config import SECRET_TOKEN, SESSION_LIFETIME_DAYS
 
@@ -28,9 +27,13 @@ static_dir = os.path.join(static_dir, 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['SECRET_KEY'] =  SECRET_TOKEN # нужен для алгоритма шифрования
+app.config['TESTING'] = False
+app.config['LOGIN_DISABLED'] = False
 app.permanent_session_lifetime = timedelta(days=SESSION_LIFETIME_DAYS)
 
-login_manager = LoginManager(app)
+login_manager = LoginManager()
+login_manager.init_app(app=app)
+login_manager.login_view = 'login'
 
 @app.route('/favicon.ico')
 def favicon() -> Response:
@@ -62,8 +65,11 @@ def index() :
     return render_template('index.html', session=session)
 
 @app.route('/post_create', methods=["POST",'GET'])
-#@login_required
+
 def post_create():
+    if not current_user.is_authenticated:
+        flash('Пожалуйста, войдите в систему, чтобы получить доступ к этой странице.', 'warning')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         name = request.form['name']
         preview = request.form['preview']
@@ -90,23 +96,19 @@ def about():
 @login_manager.user_loader
 def load_user(user_id):
     print("load_user")
-    return getUser(user_id)
+    return UserLogin().fromDB(user_id=user_id, db=db)
+
+
 
 @app.route('/login',methods=['POST','GET'])
 def login():
     if request.method == "POST":
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute(f"SELECT * FROM `clients` WHERE email = '{request.form['email']}';")
-                user = cursor.fetchall()[0]
-                cursor.close()
-                if user and check_password_hash(user['password'], request.form['password']):
-                    userlogin = UserLogin().create(user)
-                    login_user(userlogin)
-                    return redirect(url_for('index'))
-        except Exception as e:
-            print(e)
-            flash("НЕВЕРНАЯ ПАРА ЛОГИН.ПАРОЛЬ","error")
+        user = db.getUserByEmail(request.form['email'])
+        
+        if user and check_password_hash(user['password'], request.form['password']):
+            userlogin = UserLogin().create(user)
+            login_user(userlogin)
+            return redirect(url_for('index'))
 
     return render_template("login.html")
 
@@ -130,6 +132,7 @@ def register():
     return render_template("register.html")
 
 @app.route('/logout')
+@login_required
 def logout():
     res = make_response("<h1>вы больше не авторизованы</h1>")
     res.set_cookie("logged", "", 0)
@@ -141,16 +144,19 @@ def posts():
     return render_template('posts.html', result=result)
 
 @app.route('/posts/<int:id>')
+@login_required
 def post(id):
     result = db.getPost(id_post=id)
     return render_template('post.html',result=result)
 
 @app.route('/posts/<int:id>/delete')
+@login_required
 def post_delete(id):
     db.deletePost(id_post=id)
     return redirect('/posts')
 
 @app.route('/posts/<int:id>/update', methods=["POST",'GET'])
+@login_required
 def post_update(id):
     if request.method == 'POST':
         name = ''

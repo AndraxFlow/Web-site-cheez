@@ -1,7 +1,4 @@
 class UserLogin:
-    def __init__(self) -> None:
-        self.__user = None
-
     def fromDB(self,user_id, db):
         self.__user = db.getUser(user_id)
         return self

@@ -1,4 +1,7 @@
 
+from flask import flash
+
+
 class FDatabase:
     def __init__(self, db) -> None:
         self.__db = db
@@ -40,7 +43,7 @@ class FDatabase:
     
     def insertNewClient(self, name, email, password):
         try:
-            self.__cursor.execute(f"SELECT COUNT(*) as `count` FROM `clients` WHERE email = {email}")
+            self.__cursor.execute(f"SELECT COUNT(*) as `count` FROM `clients` WHERE email = '{email}'")
             res = self.__cursor.fetchall()[0]
             if res['count'] > 0:
                 print('Пользователь с таким email уже существует')
@@ -105,7 +108,31 @@ class FDatabase:
         except Exception as e:
             print('Ошибка при обновлении данных поста',e)
     
-    
-    
     def closeConnect(self):
         self.__cursor.close()
+        
+    def getUser(self, user_id):
+        try:
+            self.__cursor.execute(f"SELECT * FROM clients \
+                                    WHERE id = {user_id} LIMIT 1")
+            res = self.__cursor.fetchone()
+            if not res:
+                print("Пользователь не найден")
+                return False
+            print(res)
+            
+            return res
+        except Exception as e:
+            print('Ошибка при получении пользователя', e)
+        
+        return False
+
+    def getUserByEmail(self, email):
+        try:
+            self.__cursor.execute(f"SELECT * FROM `clients` WHERE email = '{email}' LIMIT 1;")
+            user = self.__cursor.fetchone()
+        except Exception as e:
+            print(e)
+            user = False
+            flash("НЕВЕРНАЯ ПАРА ЛОГИН.ПАРОЛЬ","error")
+        return user
